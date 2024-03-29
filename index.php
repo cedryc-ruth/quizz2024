@@ -11,7 +11,7 @@
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="get">
 	<fieldset>
 		<label for="reponse">Réponse: </label>
-		<input type="text" name="reponse" id="reponse">
+		<input type="text" name="reponse" id="reponse" required>
 	</fieldset>
 	<button>Envoyer</button>
 </form>
