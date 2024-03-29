@@ -11,7 +11,7 @@ if(isset($_GET['btSend'])) {
 	//Valider les données
 	if(!empty($_GET['reponse'])) {	//var_dump('OK');
 		//Réponse correcte ?
-		if(trim($_GET['reponse'])==$reponse) {
+		if(strtolower(trim($_GET['reponse']))==$reponse) {
 			$resultat = "Bravo!";
 		} else {
 			$resultat = "Dommage...";

@@ -31,7 +31,7 @@ if(isset($_POST['btSend'])) {
 	if(!empty($_POST['reponse'])) {	//var_dump('OK');
 		//Réponse correcte ?
 		//var_dump($reponses[$nroQuestion]);
-		if(trim($_POST['reponse'])==$reponses[$nroQuestion]) {
+		if(strtolower(trim($_POST['reponse']))==$reponses[$nroQuestion]) {
 			$nroQuestion++;
 			
 			if($nroQuestion<sizeof($questions)) {
