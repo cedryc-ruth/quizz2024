@@ -14,6 +14,11 @@ session_id($id);
 session_start();
 
 //Sécurisation (Authorization)
+if(empty($_SESSION['login'])) {	//Si pas connecté
+	header('Status: 302 Temporary');
+	header('location: login.php');
+	exit;
+}
 
 //Déclaration des variables, constantes et fonctions
 $questions = file('data/questions.txt',FILE_IGNORE_NEW_LINES);
@@ -52,6 +57,16 @@ if(isset($_POST['btSend'])) {
 			} else {
 				$resultat = "Félicitations!";
 				$success = 'finished';
+				
+				//Sauver mon score dans le palmarès
+				$data = [
+					$_SESSION['login'],
+					$score,
+					time()		//date('d/m/Y G:i')
+				];
+				$data = implode(';',$data)."\n";
+				
+				file_put_contents('data/palmares.csv',$data,FILE_APPEND);
 			}
 		} else {
 			$score--;
@@ -78,9 +93,28 @@ if(isset($_POST['btSend'])) {
 <head>
 <meta charset="utf-8">
 <title>Quizz</title>
+<style>
+.userDetails {
+	position:absolute;
+	top:10px;
+	right:10px;
+	border:1px solid gray;
+	background-color: silver;
+	padding: 10px;
+	border-radius: 10px;
+}
+.userDetails p { margin:0; font-style: italic; }
+</style>
 </head>
 <body>
 <h1>Quizz</h1>
+
+<div class="userDetails">
+	<p><?= $_SESSION['login'] ?></p>
+	<form action="login.php" method="post">
+		<button name="btLogout">Se déconnecter</button>
+	</form>
+</div>
 
 <?php if(!in_array($success,['good','finished'])) { ?>
 	<p><?= $questions[$nroQuestion] ?></p>
