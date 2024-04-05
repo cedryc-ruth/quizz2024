@@ -1,4 +1,18 @@
 <?php
+if(!empty($_GET['PHPSESSID'])) {
+	$id = $_GET['PHPSESSID'];
+} elseif(!empty($_POST['PHPSESSID'])) {
+	$id = $_POST['PHPSESSID'];
+} elseif(!empty($_COOKIE['PHPSESSID'])) {
+	$id = $_COOKIE['PHPSESSID'];
+} else {
+	$id = null;
+}
+
+session_id($id);
+
+session_start();
+
 //Sécurisation (Authorization)
 
 //Déclaration des variables, constantes et fonctions
@@ -14,8 +28,8 @@ $reponses = [
 ];
 $resultat = "";
 
-if(!empty($_COOKIE['score'])) {
-	$score = $_COOKIE['score'];
+if(isset($_SESSION['score'])) {
+	$score = $_SESSION['score'];
 } else {
 	$score = 0;
 }
@@ -56,7 +70,7 @@ if(isset($_POST['btSend'])) {
 		}
 		
 		//Sauver le score
-		setcookie('score', $score, time()+84600);
+		$_SESSION['score'] = $score;
 	} else {	//var_dump('PAS OK');
 		$resultat = "Veuillez fournir une réponse.";
 	}
@@ -79,6 +93,7 @@ if(isset($_POST['btSend'])) {
 			<label for="reponse">Réponse: </label>
 			<input type="text" name="reponse" id="reponse" required>
 			<input type="hidden" name="nroQuestion" id="nroQuestion" value="<?= $nroQuestion ?>">
+			<input type="hidden" name="PHPSESSID" id="phpsessid" value="<?= session_id() ?>">
 		</fieldset>
 		<button name="btSend">Envoyer</button>
 	</form>
@@ -89,7 +104,7 @@ if(isset($_POST['btSend'])) {
 		<?= $resultat ?>
 	
 	<?php if($success=='good') { ?>
-		<a href="<?= $_SERVER['PHP_SELF'] ?>?nroQuestion=<?= $nroQuestion ?>">Question suivante</a>
+		<a href="<?= $_SERVER['PHP_SELF'] ?>?nroQuestion=<?= $nroQuestion ?>&PHPSESSID=<?= session_id() ?>">Question suivante</a>
 	<?php } ?>
 	</p>
 
