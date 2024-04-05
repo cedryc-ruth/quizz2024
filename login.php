@@ -13,6 +13,7 @@ if(!empty($_SESSION['login'])) {	//Si déjà connecté!
 	}
 }
 
+$title = 'Connexion';
 $message = '';
 
 function verify($login, $pwd) {
@@ -41,13 +42,7 @@ if(isset($_POST['btLogin'])) {
 	}
 }
 ?>
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Quizz - Connexion</title>
-</head>
-<body>
+<?php include 'inc/header.php'; ?>
 <h1>Quizz</h1>
 <h2>Formulaire de connexion</h2>
 
@@ -66,5 +61,5 @@ if(isset($_POST['btLogin'])) {
 	<button name="btLogin">Se connecter</button>
 </form>
 <div><?= $message ?></div>
-</body>
-</html>
+
+<?php include 'inc/footer.php'; ?>
