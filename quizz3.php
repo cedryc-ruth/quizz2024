@@ -16,16 +16,9 @@ session_start();
 //Sécurisation (Authorization)
 
 //Déclaration des variables, constantes et fonctions
-$questions = [
-	"Quel est la couleur du cheval blanc de Napoléon?",
-	"Quel est votre jour préféré?",
-	"Quel est votre cusine préférée?",
-];
-$reponses = [
-	"blanc",
-	"vendredi",
-	"thaï",
-];
+$questions = file('data/questions.txt',FILE_IGNORE_NEW_LINES);
+$reponses = file('data/reponses.txt',FILE_IGNORE_NEW_LINES);
+
 $resultat = "";
 
 if(isset($_SESSION['score'])) {
