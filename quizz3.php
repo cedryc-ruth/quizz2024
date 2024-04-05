@@ -1,10 +1,10 @@
 <?php
-if(!empty($_GET['PHPSESSID'])) {
+if(!empty($_COOKIE['PHPSESSID'])) {
+	$id = $_COOKIE['PHPSESSID'];
+} elseif(!empty($_GET['PHPSESSID'])) {
 	$id = $_GET['PHPSESSID'];
 } elseif(!empty($_POST['PHPSESSID'])) {
 	$id = $_POST['PHPSESSID'];
-} elseif(!empty($_COOKIE['PHPSESSID'])) {
-	$id = $_COOKIE['PHPSESSID'];
 } else {
 	$id = null;
 }
@@ -34,10 +34,8 @@ if(isset($_SESSION['score'])) {
 	$score = 0;
 }
 
-if(!empty($_GET['nroQuestion'])) {
-	$nroQuestion = $_GET['nroQuestion'];
-} elseif(!empty($_POST['nroQuestion'])) {
-	$nroQuestion = $_POST['nroQuestion'];
+if(isset($_SESSION['nroQuestion'])) {
+	$nroQuestion = $_SESSION['nroQuestion'];
 } else {
 	$nroQuestion = 0;
 }
@@ -70,7 +68,13 @@ if(isset($_POST['btSend'])) {
 		}
 		
 		//Sauver le score
-		$_SESSION['score'] = $score;
+		if($success != 'finished') {
+			$_SESSION['score'] = $score;
+			$_SESSION['nroQuestion'] = $nroQuestion;
+		} else {
+			$_SESSION['score'] = 0;
+			$_SESSION['nroQuestion'] = 0;
+		}
 	} else {	//var_dump('PAS OK');
 		$resultat = "Veuillez fournir une réponse.";
 	}
@@ -92,7 +96,6 @@ if(isset($_POST['btSend'])) {
 		<fieldset>
 			<label for="reponse">Réponse: </label>
 			<input type="text" name="reponse" id="reponse" required>
-			<input type="hidden" name="nroQuestion" id="nroQuestion" value="<?= $nroQuestion ?>">
 			<input type="hidden" name="PHPSESSID" id="phpsessid" value="<?= session_id() ?>">
 		</fieldset>
 		<button name="btSend">Envoyer</button>
@@ -104,13 +107,15 @@ if(isset($_POST['btSend'])) {
 		<?= $resultat ?>
 	
 	<?php if($success=='good') { ?>
-		<a href="<?= $_SERVER['PHP_SELF'] ?>?nroQuestion=<?= $nroQuestion ?>&PHPSESSID=<?= session_id() ?>">Question suivante</a>
+		<a href="<?= $_SERVER['PHP_SELF'] ?>?PHPSESSID=<?= session_id() ?>">Question suivante</a>
 	<?php } ?>
 	</p>
 
-<?php //if($success == 'finished') { ?>	
-	<p>Votre score est de <?= $score ?> points.</p>
-<?php //} ?>
+<p>Votre score est de <?= $score ?> points.</p>
+
+<?php if($success == 'finished') { ?>	
+	<p><a href="<?= $_SERVER['PHP_SELF'] ?>">Recommencer le quizz</a></p>
+<?php } ?>
 </div>
 </body>
 </html>
