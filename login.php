@@ -1,4 +1,6 @@
 <?php
+require 'config.php';
+
 session_start();
 
 //Sécurisation (Authorization)
@@ -17,10 +19,34 @@ $title = 'Connexion';
 $message = '';
 
 function verify($login, $pwd) {
-	$loginSecret = 'bob';
-	$pwdSecret = 'epfc';
+	//Se connecter à la DB
+	$link = mysqli_connect(HOSTNAME, USERNAME, PASSWORD, DATABASE);
+	
+	//Récupérer le password du user auquel correspond le login
+		//Préparer la requête
+			//Nettoyer les données entrantes (risque d'injection SQL)
+	$login = mysqli_real_escape_string($link, $login);
+		
+	$query = "SELECT password FROM users WHERE login='$login'";
+		
+		//Envoyer et Récupérer le résultat
+	$result = mysqli_query($link, $query);	//var_dump($result); die;
+		
+		//Extraire les données
+	$data = mysqli_fetch_assoc($result);	//var_dump($data); die;
+		
+		//Libérer le résultat
+	mysqli_free_result($result);
+		
+		//Se déconnecter
+	mysqli_close($link);
 
-	return $login==$loginSecret && $pwd==$pwdSecret;
+	if(empty($data)) {	//L'utilisateur n'est pas trouvé dans la DB
+		return false;
+	}
+	
+	//Vérifier le hashage du password avec le mot de passe donnée par l'utilisateur
+	return password_verify($pwd, $data['password']);
 }
 
 if(isset($_POST['btLogin'])) {
@@ -32,7 +58,7 @@ if(isset($_POST['btLogin'])) {
 			
 			//Redirection au quiz
 			header('Status: 302 Temporary');
-			header('location: quizz3.php');
+			header('location: quizz4.php');
 			exit;
 		} else {
 			$message = 'Les identifiants ne sont pas corrects!';
