@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Quizz :: <?= $title ?></title>
+<title>Quizz :: <?= $title ?? 'Bienvenue' ?></title>
 <style>
 .userDetails {
 	position:absolute;
@@ -15,5 +15,8 @@
 }
 .userDetails p { margin:0; font-style: italic; }
 </style>
+<?= $extraCSS ?? '' ?>
+<?= $extraJS ?? '' ?>
+<?= $extraHTML ?? '' ?>
 </head>
 <body>

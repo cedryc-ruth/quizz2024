@@ -18,6 +18,7 @@ require 'inc/secure.php';
 
 //Déclaration des variables, constantes et fonctions
 $title = 'Quizz';
+$extraJS = '<script>alert("ok")</script>';
 
 $questions = file('data/questions.txt',FILE_IGNORE_NEW_LINES);
 $reponses = file('data/reponses.txt',FILE_IGNORE_NEW_LINES);
