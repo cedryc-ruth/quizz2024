@@ -86,6 +86,7 @@ if(isset($_POST['btLogin'])) {
 	</fieldset>
 	<button name="btLogin">Se connecter</button>
 </form>
+<p>Pas encore membre ? Cliquez ici pour vous <a href="signin.php">inscrire</a>.</p>
 <div><?= $message ?></div>
 
 <?php include 'inc/footer.php'; ?>
