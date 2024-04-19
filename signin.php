@@ -27,23 +27,34 @@ function loginExists($dirtyLogin) {
 	return $numRows>0;
 }
 
-function registerUser($dirtyLogin, $password) {
+function registerUser($dirtyEmail, $dirtyLogin, $password) {
 	//Se connecter au serveur de DB
 	$link = mysqli_connect(HOSTNAME, USERNAME, PASSWORD, DATABASE);	//var_dump($link);
 	
 	//Nettoyer les données entrantes
+	$email = mysqli_real_escape_string($link,$dirtyEmail);
 	$login = mysqli_real_escape_string($link,$dirtyLogin);
 	$password = password_hash($password, PASSWORD_BCRYPT);
 	
 	//Préparer la requête
-	$query = "INSERT INTO `users` (`id`, `login`, `password`, `created_at`) 
-		VALUES (NULL, '$login', '$password', '".date('Y-m-d H:i:s')."')";	//var_dump($query);
+	$query = "INSERT INTO `users` (`id`, `email`, `login`, `password`, `created_at`) 
+		VALUES (NULL, '$email', '$login', '$password', '".date('Y-m-d H:i:s')."')";	//var_dump($query);
 		
 	//Envoyer la requête et récupérer le résultat
 	$result = mysqli_query($link,$query);
 	
 	//Analyser le résultat
 	if($result && mysqli_affected_rows($link)>0) {
+		//Envoi du mail de confirmation
+		$to = $email;
+		$subject = 'Inscription au site du Quizz';
+		$message = 'Votre inscription a bien été acceptée.';
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'From: contact@quizz.be';
+		
+		mail($to, $subject, $message, implode("\r\n", $headers));
+		
 		//Solution 1: notifier et laisser l'utilisateur se connecter lui-même
 		//$message = "Inscription réussie. Bienvenue.";
 		
@@ -71,12 +82,12 @@ function registerUser($dirtyLogin, $password) {
 //Traitement des commandes
 if(isset($_POST['btSignin'])) {
 	//Validation 0: champs obligatoires
-	if(!empty($_POST['login']) && !empty($_POST['password']) && !empty($_POST['confPassword'])) {
+	if(!empty($_POST['email']) && !empty($_POST['login']) && !empty($_POST['password']) && !empty($_POST['confPassword'])) {
 		//Validation 1: valeur des champs
 		if(!loginExists($_POST['login'])) {
 			if($_POST['password']==$_POST['confPassword']) {
 			//Inscrire l'utilisateur dans la base de données
-				registerUser($_POST['login'],$_POST['password']);
+				registerUser($_POST['email'],$_POST['login'],$_POST['password']);
 			} else {
 				$message = "Les mots de passe ne correspondent pas!";
 			}
@@ -88,9 +99,6 @@ if(isset($_POST['btSignin'])) {
 	}
 }
 
-
-var_dump($_POST);
-
 include 'inc/header.php';
 ?>
 
@@ -98,6 +106,10 @@ include 'inc/header.php';
 
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" novalidate>
 	<fieldset>
+		<div>
+			<label for="email">Email:</label>
+			<input type="email" name="email" id="email" required>
+		</div>
 		<div>
 			<label for="login">Login:</label>
 			<input type="text" name="login" id="login" required>
